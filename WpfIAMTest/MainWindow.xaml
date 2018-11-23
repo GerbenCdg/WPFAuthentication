@@ -4,11 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfIAMTest"
-        xmlns:wpfauth="clr-namespace:WpfAuth;assembly=WpfAuth"
+        xmlns:wpfiam="clr-namespace:WpfIAM;assembly=WpfIAM"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <wpfauth:AuthenticationBrowser x:Name="AuthBrowser"/>
+        <wpfiam:AuthenticationBrowser x:Name="AuthBrowser"/>
 
         <Button x:Name="RequestUserInfoButton" Click="RequestUserInfoButton_Click" Width="100" Height="20" Content="Request user info" Margin="20,10,397,293" />
         <Button x:Name="ClearButton" Content="Clear response" Width="100" Height="20" Click="ClearButton_Click" Margin="20,268,397,35"/>
