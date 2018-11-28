@@ -8,5 +8,8 @@
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <Button Content="Begin" Height="24" Width="96" Click="Button_Click" />
+        <WindowsFormsHost x:Name="clientAuthorizationViewHost" Visibility="Hidden">
+            <local:ClientAuthorizationView x:Name="clientAuthorizationView" Completed="clientAuthorizationView_Completed" />
+        </WindowsFormsHost>
     </Grid>
 </Window>
