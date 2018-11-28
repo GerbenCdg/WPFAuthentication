@@ -1,14 +1,9 @@
-﻿using IAM.OAuth2.Events;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace IAM.OAuth2
@@ -37,7 +32,7 @@ namespace IAM.OAuth2
         /// 
         /// Subscription to this event is mandatory.
         /// </summary>
-        public Action<AuthorizationRequiredEventArgs> OnAuthorizationRequired { protected get; set; }
+        public Func<AuthorizationRequiredParameters, Task> OnAuthorizationRequired { protected get; set; }
 
         /// <summary>
         /// Subscribe to this event to be informed when Authorization has been granted.
@@ -65,7 +60,7 @@ namespace IAM.OAuth2
         /// <param name="client">an OAuth2.0 client</param>
         /// <param name="endPoint">a OAuth2.0 endpoints wrapper</param>
         /// <param name="onAuthorizationRequiredHandler">A Handler for the OnAuthorized event, which is executed when the user of this OAuth2Manager needs to display a browser where the user is prompted to provider authorization</param>
-        protected OAuth2Manager(OAuth2Client client, OAuth2EndPoints endPoint, Action<AuthorizationRequiredEventArgs> onAuthorizationRequiredHandler)
+        protected OAuth2Manager(OAuth2Client client, OAuth2EndPoints endPoint, Func<AuthorizationRequiredParameters, Task> onAuthorizationRequiredHandler)
         {
             Client = client;
             EndPoints = endPoint;
@@ -138,33 +133,21 @@ namespace IAM.OAuth2
         {
             if (OnAuthorizationRequired == null) throw new NullReferenceException("OnAuthorizationRequired must be subscribed to ! There, you must show a web browser which shows an OAuth2.0 authorization page");
 
-            // Creates an HttpListener to listen for requests on our redirect URI.
-            var http = new HttpListener();
-            http.Prefixes.Add(Client.RedirectionUrl);
-            http.Start();
-
             // Raise the OnAuthorizationRequired event to which should be subscribed
-            OnAuthorizationRequired.Invoke(new AuthorizationRequiredEventArgs(EndPoints.Authorization, Client.Id, Client.RedirectionUrl));
+            var authorizationRequiredParams = new AuthorizationRequiredParameters(EndPoints.Authorization, Client.Id, Client.RedirectionUri);
+            await OnAuthorizationRequired.Invoke(authorizationRequiredParams);
 
-            // Wait for the OAuth authorization response.
-            var context = await http.GetContextAsync();
+            var responseParameters = authorizationRequiredParams.RedirectionUriParameters;
 
             OnAuthorized.Invoke();
 
-            var response = context.Response;
-            http.Stop();
-
             // The queryString of the redirect URI should contain the authorization code, but not any errors.
-            if (context.Request.QueryString.Get("error") != null)
+            if (responseParameters.Get("error") != null)
             {
-                throw new WebException("OAuth authorization error: " + context.Request.QueryString.Get("error"));
-            }
-            if (context.Request.QueryString.Get("code") == null)
-            {
-                throw new WebException("Malformed authorization response. 'code' key missing in QueryString: " + context.Request.QueryString);
+                throw new WebException("OAuth authorization error: " + responseParameters.Get("error"));
             }
 
-            var authorizationCode = context.Request.QueryString.Get("code");
+            var authorizationCode = responseParameters.Get("code");
             RequestTokensFromAuthorizationCode(authorizationCode);
         }
 
@@ -172,7 +155,6 @@ namespace IAM.OAuth2
         /// Exchanges the authorizationCode for an accessToken and refreshToken.
         /// </summary>
         /// <param name="authorizationCode"></param>
-
         protected virtual void RequestTokensFromAuthorizationCode(string authorizationCode)
         {
             var bodyParameters = AuthorizationParameters;
@@ -180,7 +162,7 @@ namespace IAM.OAuth2
             {
                 [OAuth2Constants.GrantType] = OAuth2Constants.AuthorizationCode,
                 [OAuth2Constants.Code] = authorizationCode,
-                [OAuth2Constants.RedirectUri] = Client.RedirectionUrl
+                [OAuth2Constants.RedirectUri] = Client.RedirectionUri
             });
 
             try
@@ -205,7 +187,7 @@ namespace IAM.OAuth2
         }
 
         /// <summary>
-        /// Helper method which reads the HttpWebResponse stream to provide an exception with more information about the error.
+        /// Reads the HttpWebResponse stream to provide an exception with more information about the error.
         /// </summary>
         /// <param name="oAuth2ErrorResponse"></param>
         /// <returns>A WebException</returns>

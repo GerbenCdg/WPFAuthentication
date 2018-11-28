@@ -3,6 +3,7 @@ using IAM.OpenIdConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -39,7 +40,7 @@ namespace WpfIAMTest
         private const string KeycloakOIDCDiscoveryUrl = "http://10.136.11.214:8080/auth/realms/Realm1/.well-known/openid-configuration";
         private const string GoogleOIDCDiscoveryUrl = "https://accounts.google.com/.well-known/openid-configuration";
 
-        private readonly string RedirectUri = string.Format("http://{0}:{1}/", "10.136.11.174", "4242");
+        private readonly string RedirectUri = string.Format("http://{0}/", IPAddress.Loopback);
         // private readonly string RedirectUriGoogle = "127.0.0.1:4242";
 
         const string authorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";

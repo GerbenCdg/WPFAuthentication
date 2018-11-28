@@ -22,17 +22,18 @@ namespace IAM.OAuth2
         internal string Secret { get; }
 
         /// <summary>
-        /// The redirect url used by OAuth2.0, used to send the Authorization code. This should be a local IP (either localhost or your public IP), so you can retrieve the Authorization code.</param>
+        /// The redirect URI used by OAuth2.0, to send the 'authorization code' (also named 'request token). This should be a local IP (either localhost or your public IP), so that the Authorization code can be received by the OAuth2Manager with a HttpListener.</param>
         /// </summary>
-        public string RedirectionUrl { get; }
+        public string RedirectionUri { get; }
 
         /// <param name="clientId">The ID of the client</param>
         /// <param name="clientSecret">The secret of the client</param>
-        public OAuth2Client(string clientId, string clientSecret, string oAuth2RedirectionUrl)
+        /// <param name="oAuth2RedirectionUri">The redirect URI used by OAuth2.0, to send the 'authorization code' (also named 'request token). This should be a local IP (either localhost or your public IP), so that the Authorization code can be received by the OAuth2Manager with a HttpListener.</param>
+        public OAuth2Client(string clientId, string clientSecret, string oAuth2RedirectionUri)
         {
             Id = clientId;
             Secret = clientSecret;
-            RedirectionUrl = oAuth2RedirectionUrl;
+            RedirectionUri = oAuth2RedirectionUri;
         }
     }
 }

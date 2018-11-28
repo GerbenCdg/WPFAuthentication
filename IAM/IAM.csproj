@@ -48,7 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OAuth2\Events\AuthorizationRequiredEventArgs.cs" />
+    <Compile Include="OAuth2\AuthorizationRequiredParameters.cs" />
     <Compile Include="OAuth2\OAuth2Client.cs" />
     <Compile Include="OAuth2\OAuth2Constants.cs" />
     <Compile Include="OAuth2\OAuth2EndPoints.cs" />
@@ -62,6 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="OAuth2\Events\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

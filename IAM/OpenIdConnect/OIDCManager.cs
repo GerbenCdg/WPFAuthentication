@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using IAM.OAuth2;
 using System.Collections.Specialized;
 using Newtonsoft.Json.Linq;
-using System.Net;
-using System.IO;
-using Newtonsoft.Json;
-using IAM.OAuth2.Events;
 
 namespace IAM.OpenIdConnect
 {
@@ -27,7 +20,7 @@ namespace IAM.OpenIdConnect
         /// <param name="client"></param>
         /// <param name="endPoints"></param>
         /// <param name="onAuthorizationRequiredHandler"></param>
-        public OIDCManager(OAuth2Client client, OIDCEndPoints endPoints, Action<AuthorizationRequiredEventArgs> onAuthorizationRequiredHandler)
+        public OIDCManager(OAuth2Client client, OIDCEndPoints endPoints, Func<AuthorizationRequiredParameters, Task> onAuthorizationRequiredHandler)
             : base(client, endPoints, onAuthorizationRequiredHandler)
         {
             EndPoints = endPoints;
